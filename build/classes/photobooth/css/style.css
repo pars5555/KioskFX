@@ -1,0 +1,63 @@
+/** CSS **/
+.customScrollBar{
+    -fx-border-color:derive(gray,80%);
+}
+
+/* The main scrollbar CSS class of ListView */
+.customScrollBar .scroll-bar:horizontal ,
+.customScrollBar  .scroll-bar:vertical{
+    -fx-background-color:transparent;
+}
+
+/* The increment and decrement button CSS class of scrollbar */
+.customScrollBar .increment-button ,.customScrollBar .decrement-button {
+    -fx-background-color:transparent;
+    -fx-border-color:derive(gray,80%);
+}
+
+/* The main scrollbar **track** CSS class  */
+.customScrollBar .scroll-bar:horizontal .track ,
+.customScrollBar .scroll-bar:vertical .track{
+    -fx-background-color: transparent;
+    -fx-border-color:derive(gray,80%);
+    -fx-background-radius: 0em;
+}
+
+/* The main scrollbar **thumb** CSS class which we drag every time (movable) */
+.customScrollBar .scroll-bar:horizontal .thumb,
+.customScrollBar .scroll-bar:vertical .thumb {
+    -fx-background-color:derive(black,90%);
+    -fx-background-insets: 0, 0, 0;
+    -fx-background-radius: 0em;
+
+}
+/* The increment and decrement button CSS class of scrollbar */
+.customScrollBar .increment-button ,.customScrollBar .decrement-button {
+    -fx-background-color:transparent;
+    -fx-border-color:derive(gray,80%);
+    -fx-padding:10px;
+    -fx-font-size:30px;
+}
+
+.blueButton{
+    -fx-background-color: #000000 linear-gradient(#7ebcea, #2f4b8f), linear-gradient(#426ab7, #263e75), linear-gradient(#395cab, #223768);
+    -fx-background-insets: 0,1,2,3;
+    -fx-background-radius: 3,2,2,2;
+    -fx-padding: 12 30 12 30;
+    -fx-text-fill: white;
+    -fx-font-size: 22px;
+}
+
+.folderButton{
+    -fx-background-color: #ecebe9,rgba(0,0,0,0.05),linear-gradient(#dcca8a, #c7a740),linear-gradient(#f9f2d6 0%, #f4e5bc 20%, #e6c75d 80%, #e2c045 100%),linear-gradient(#f6ebbe, #e6c34d);
+    -fx-background-insets: 0,1,2,3;
+    -fx-background-radius: 3,2,2,2;
+    -fx-padding: 10 10 10 10;
+    -fx-text-fill: black;
+    -fx-font-size: 12px;
+}
+
+.image-view{
+   -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);
+    
+}
