@@ -43,15 +43,21 @@ public class HomePane extends Pane {
         but1.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                Global.getInstance().setSceneRoot(new ExplorerPane("C:\\Users\\Pars\\Desktop\\tmp"));
+                ExplorerPane.getInstance().setDir("C:\\Users\\Pars\\Desktop\\tmp");
+                Global.getInstance().setSceneRoot(ExplorerPane.getInstance());
             }
         });
         this.getChildren().add(but1);
 
-        Button but2 = new Button("Blutooth");
+        Button but2 = new Button("Email");
         but2.setMinWidth(250);
-         but2.getStyleClass().add("blueButton");
-       
+        but2.getStyleClass().add("blueButton");
+        but2.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Global.getInstance().setSceneRoot(new EmailPane());
+            }
+        });
         but2.setLayoutX(450);
         but2.setLayoutY(50);
         this.getChildren().add(but2);

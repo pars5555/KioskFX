@@ -47,6 +47,23 @@
     -fx-text-fill: white;
     -fx-font-size: 22px;
 }
+.small-square{
+    -fx-background-color: #000000 linear-gradient(#7ebcea, #2f4b8f), linear-gradient(#426ab7, #263e75), linear-gradient(#395cab, #223768);
+    -fx-background-insets: 0,1,2,3;
+    -fx-background-radius: 3,2,2,2;
+    -fx-padding: 5 5 5 5;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+}
+
+.movement{
+    -fx-background-color: #000000 linear-gradient(#7ebcea, #2f4b8f), linear-gradient(#426ab7, #263e75), linear-gradient(#395cab, #223768);
+    -fx-background-insets: 0,1,2,3;
+    -fx-background-radius: 3,2,2,2;
+    -fx-padding: 5 5 5 5;
+    -fx-text-fill: white;
+    -fx-font-size: 20px;
+}
 
 .folderButton{
     -fx-background-color: #ecebe9,rgba(0,0,0,0.05),linear-gradient(#dcca8a, #c7a740),linear-gradient(#f9f2d6 0%, #f4e5bc 20%, #e6c75d 80%, #e2c045 100%),linear-gradient(#f6ebbe, #e6c34d);

@@ -9,7 +9,10 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -22,9 +25,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.TilePane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.text.Font;
 import org.apache.commons.io.FilenameUtils;
 import photobooth.Global;
@@ -35,24 +35,39 @@ import photobooth.Global;
  */
 public class ExplorerPane extends Pane {
 
+    private static ExplorerPane instance;
+
+    public static ExplorerPane getInstance() {
+        if (instance == null) {
+            instance = new ExplorerPane();
+        }
+        return instance;
+    }
+
     private String dir;
     private int offset;
     private int limit;
     private int directoryLevel;
 
-    public ExplorerPane(String dir) {
-        this(dir, 0);
+    private ExplorerPane() {
+
     }
 
-    public ExplorerPane(String dir, int offset) {
-        this(dir, offset, 18, 0);
+    public void setDir(String dir) {
+        setDir(dir, 0);
     }
 
-    public ExplorerPane(String dir, int offset, int limit, int directoryLevel) {
+    public void setDir(String dir, int offset) {
+        setDir(dir, offset, 18, 0);
+    }
+
+    public void setDir(String dir, int offset, int limit, int directoryLevel) {
         init(dir, offset, limit, directoryLevel);
     }
 
     private void init(String dir, int offset, int limit, int directoryLevel) {
+        
+        this.getChildren().removeAll(this.getChildren());
         this.dir = dir;
         this.offset = offset;
         this.limit = limit;
@@ -115,7 +130,8 @@ public class ExplorerPane extends Pane {
                 button.setOnAction(new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent event) {
-                        Global.getInstance().setSceneRoot(new ExplorerPane(file.getAbsolutePath(), 0, limit, directoryLevel + 1));
+                        ExplorerPane.getInstance().setDir(file.getAbsolutePath(), 0, limit, directoryLevel + 1);
+                        Global.getInstance().setSceneRoot(ExplorerPane.getInstance());
                     }
                 });
                 tile.getChildren().add(button);
@@ -141,13 +157,16 @@ public class ExplorerPane extends Pane {
         // DEFAULT_THUMBNAIL_WIDTH is a constant you need to define
         // The last two arguments are: preserveRatio, and use smooth (slower)
         // resizing
+        ExplorerPane explorerPane = this;
         ImageView imageView = null;
         BorderPane borderPane = new BorderPane();
         try {
             borderPane.setMaxSize(110, 110);
             borderPane.setMinSize(110, 110);
-            final Image image = new Image(new FileInputStream(imageFile), 110, 110, true, true);
+            FileInputStream fileInputStream = new FileInputStream(imageFile);
+            final Image image = new Image(fileInputStream, 110, 110, true, true);
             imageView = new ImageView(image);
+            fileInputStream.close();
             imageView.getStyleClass().add("image-view");
             borderPane.setCenter(imageView);
             //imageView.setFitWidth(80);
@@ -159,8 +178,7 @@ public class ExplorerPane extends Pane {
                     if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
 
                         if (mouseEvent.getClickCount() == 1) {
-                            Global.getInstance().setSceneRoot(new ImagePane(imageFile));
-                            
+                            Global.getInstance().setSceneRoot(new ImagePane(explorerPane, imageFile));
 
                         }
                     }
@@ -168,6 +186,8 @@ public class ExplorerPane extends Pane {
             });
         } catch (FileNotFoundException ex) {
             ex.printStackTrace();
+        } catch (IOException ex) {
+            Logger.getLogger(ExplorerPane.class.getName()).log(Level.SEVERE, null, ex);
         }
         return borderPane;
     }
@@ -204,7 +224,8 @@ public class ExplorerPane extends Pane {
             @Override
             public void handle(ActionEvent event) {
                 System.err.println(new File(dir).getParentFile().getAbsolutePath());
-                Global.getInstance().setSceneRoot(new ExplorerPane(new File(dir).getParentFile().getAbsolutePath(), 0, limit, directoryLevel - 1));
+                ExplorerPane.getInstance().setDir(new File(dir).getParentFile().getAbsolutePath(), 0, limit, directoryLevel - 1);
+                Global.getInstance().setSceneRoot(ExplorerPane.getInstance());
             }
         });
 
@@ -219,7 +240,8 @@ public class ExplorerPane extends Pane {
         button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                Global.getInstance().setSceneRoot(new ExplorerPane(dir, offset + limit, limit, directoryLevel));
+                ExplorerPane.getInstance().setDir(dir, offset + limit, limit, directoryLevel);
+                Global.getInstance().setSceneRoot(ExplorerPane.getInstance());
             }
         });
     }
@@ -233,8 +255,8 @@ public class ExplorerPane extends Pane {
         button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-
-                Global.getInstance().setSceneRoot(new ExplorerPane(dir, offset - limit, limit, directoryLevel));
+                ExplorerPane.getInstance().setDir(dir, offset - limit, limit, directoryLevel);
+                Global.getInstance().setSceneRoot(ExplorerPane.getInstance());
             }
         });
     }

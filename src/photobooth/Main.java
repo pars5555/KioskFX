@@ -5,6 +5,7 @@
  */
 package photobooth;
 
+import java.util.Calendar;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -16,6 +17,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+       
         Global.print("Started...");
         Global.getInstance(stage).start();
 
