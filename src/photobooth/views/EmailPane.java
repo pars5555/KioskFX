@@ -34,20 +34,27 @@ import photobooth.managers.EmailManager;
  */
 public class EmailPane extends Pane {
 
-    public EmailPane() {
-        addXButton();
-        String text = Global.getPhrase("email_pane_text");
-        Label label = new Label(text);
-        label.setWrapText(true);
-        label.setLayoutX(50);
-        label.setLayoutY(150);
-        label.setMaxWidth(700);
-        label.setTextAlignment(TextAlignment.CENTER);
-        label.setFont(new Font(40));
-        label.setTextFill(Color.web("#000"));
-        this.getChildren().add(label);
-        Timer t = new Timer();
+    private static EmailPane instance;
 
+    public static EmailPane getInstance() {
+        if (instance == null) {
+            instance = new EmailPane();
+        }
+        return instance;
+    }
+    private Timer t;
+
+    private EmailPane() {
+        addXButton();
+        addLabel();
+    }
+
+    public void init() {
+        if (t != null) {
+            t.cancel();
+            t.purge();
+        }
+        t = new Timer();
         t.schedule(new TimerTask() {
 
             @Override
@@ -58,9 +65,9 @@ public class EmailPane extends Pane {
                 List<BufferedImage> emailImages = EmailManager.getInstance().getEmailImages(now);
                 int i = 1;
                 try {
-                    FileUtils.cleanDirectory(new File("C:\\Users\\Pars\\Desktop\\email"));
+                    FileUtils.cleanDirectory(new File("C:\\Users\\default.User\\Desktop\\email"));
                     for (BufferedImage emailImage : emailImages) {
-                        ImageIO.write(emailImage, "jpg", new File("C:\\Users\\Pars\\Desktop\\email\\" + i++ + ".jpg"));
+                        ImageIO.write(emailImage, "jpg", new File("C:\\Users\\default.User\\Desktop\\email\\" + i++ + ".jpg"));
                     }
                 } catch (IOException ex) {
                     Logger.getLogger(EmailPane.class.getName()).log(Level.SEVERE, null, ex);
@@ -68,13 +75,14 @@ public class EmailPane extends Pane {
                 if (!emailImages.isEmpty()) {
                     t.cancel();
                     t.purge();
-                    ExplorerPane.getInstance().setDir("C:\\Users\\Pars\\Desktop\\email");
+                    ExplorerPane.getInstance().setDir("C:\\Users\\default.User\\Desktop\\email");
                     Global.getInstance().setSceneRoot(ExplorerPane.getInstance());
                 }
             }
         }, 1000, 5000);
     }
-     private void addXButton() {
+
+    private void addXButton() {
         Button exitButton = new Button("X");
         exitButton.setLayoutX(720);
         exitButton.setLayoutY(10);
@@ -83,9 +91,24 @@ public class EmailPane extends Pane {
         exitButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                t.cancel();
+                t.purge();
                 Global.getInstance().setSceneRoot(HomePane.getInstance());
             }
         });
+    }
+
+    private void addLabel() {
+        String text = Global.getPhrase("email_pane_text");
+        Label label = new Label(text);
+        label.setWrapText(true);
+        label.setLayoutX(50);
+        label.setLayoutY(150);
+        label.setMaxWidth(700);
+        label.setTextAlignment(TextAlignment.CENTER);
+        label.setFont(new Font(40));
+        label.setTextFill(Color.web("#000"));
+        this.getChildren().add(label);
     }
 
 }

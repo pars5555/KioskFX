@@ -5,6 +5,9 @@
  */
 package photobooth.views;
 
+import java.util.Timer;
+import java.util.TimerTask;
+import javafx.application.Platform;
 import photobooth.Global;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -43,8 +46,20 @@ public class HomePane extends Pane {
         but1.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                ExplorerPane.getInstance().setDir("C:\\Users\\Pars\\Desktop\\tmp");
-                Global.getInstance().setSceneRoot(ExplorerPane.getInstance());
+
+                Global.getInstance().setSceneRoot(LoadingPane.getInstance());
+
+                Platform.runLater(() -> {
+                    new Thread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            ExplorerPane.getInstance().setDir("C:\\Users\\default.User\\Desktop\\moyka");
+                            Global.getInstance().setSceneRoot(ExplorerPane.getInstance());
+                        }
+                    }).start();
+                });
+
             }
         });
         this.getChildren().add(but1);
@@ -55,7 +70,8 @@ public class HomePane extends Pane {
         but2.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                Global.getInstance().setSceneRoot(new EmailPane());
+                EmailPane.getInstance().init();
+                Global.getInstance().setSceneRoot(EmailPane.getInstance());
             }
         });
         but2.setLayoutX(450);

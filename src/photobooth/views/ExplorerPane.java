@@ -11,8 +11,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -26,6 +29,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.text.Font;
+import javax.swing.SwingUtilities;
 import org.apache.commons.io.FilenameUtils;
 import photobooth.Global;
 
@@ -66,7 +70,7 @@ public class ExplorerPane extends Pane {
     }
 
     private void init(String dir, int offset, int limit, int directoryLevel) {
-        
+
         this.getChildren().removeAll(this.getChildren());
         this.dir = dir;
         this.offset = offset;
@@ -130,8 +134,20 @@ public class ExplorerPane extends Pane {
                 button.setOnAction(new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent event) {
-                        ExplorerPane.getInstance().setDir(file.getAbsolutePath(), 0, limit, directoryLevel + 1);
-                        Global.getInstance().setSceneRoot(ExplorerPane.getInstance());
+
+                        Global.getInstance().setSceneRoot(LoadingPane.getInstance());
+
+                        Platform.runLater(() -> {
+                            new Thread(new Runnable() {
+
+                                @Override
+                                public void run() {
+                                    ExplorerPane.getInstance().setDir(file.getAbsolutePath(), 0, limit, directoryLevel + 1);
+                                    Global.getInstance().setSceneRoot(ExplorerPane.getInstance());
+                                }
+                            }).start();
+                        });
+
                     }
                 });
                 tile.getChildren().add(button);
@@ -178,7 +194,18 @@ public class ExplorerPane extends Pane {
                     if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
 
                         if (mouseEvent.getClickCount() == 1) {
-                            Global.getInstance().setSceneRoot(new ImagePane(explorerPane, imageFile));
+                            Global.getInstance().setSceneRoot(LoadingPane.getInstance());
+
+                            Platform.runLater(() -> {
+                                new Thread(new Runnable() {
+
+                                    @Override
+                                    public void run() {
+                                        ImagePane.getInstance().init(explorerPane, imageFile);
+                                        Global.getInstance().setSceneRoot(ImagePane.getInstance());
+                                    }
+                                }).start();
+                            });
 
                         }
                     }
@@ -223,9 +250,19 @@ public class ExplorerPane extends Pane {
         button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                System.err.println(new File(dir).getParentFile().getAbsolutePath());
-                ExplorerPane.getInstance().setDir(new File(dir).getParentFile().getAbsolutePath(), 0, limit, directoryLevel - 1);
-                Global.getInstance().setSceneRoot(ExplorerPane.getInstance());
+                Global.getInstance().setSceneRoot(LoadingPane.getInstance());
+
+                Platform.runLater(() -> {
+                    new Thread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            ExplorerPane.getInstance().setDir(new File(dir).getParentFile().getAbsolutePath(), 0, limit, directoryLevel - 1);
+                            Global.getInstance().setSceneRoot(ExplorerPane.getInstance());
+                        }
+                    }).start();
+                });
+
             }
         });
 
@@ -240,8 +277,17 @@ public class ExplorerPane extends Pane {
         button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                ExplorerPane.getInstance().setDir(dir, offset + limit, limit, directoryLevel);
-                Global.getInstance().setSceneRoot(ExplorerPane.getInstance());
+                Global.getInstance().setSceneRoot(LoadingPane.getInstance());
+                Platform.runLater(() -> {
+                    new Thread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            ExplorerPane.getInstance().setDir(dir, offset + limit, limit, directoryLevel);
+                            Global.getInstance().setSceneRoot(ExplorerPane.getInstance());
+                        }
+                    }).start();
+                });
             }
         });
     }
@@ -255,8 +301,17 @@ public class ExplorerPane extends Pane {
         button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                ExplorerPane.getInstance().setDir(dir, offset - limit, limit, directoryLevel);
-                Global.getInstance().setSceneRoot(ExplorerPane.getInstance());
+                Global.getInstance().setSceneRoot(LoadingPane.getInstance());
+                Platform.runLater(() -> {
+                    new Thread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            ExplorerPane.getInstance().setDir(dir, offset - limit, limit, directoryLevel);
+                            Global.getInstance().setSceneRoot(ExplorerPane.getInstance());
+                        }
+                    }).start();
+                });
             }
         });
     }

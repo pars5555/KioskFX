@@ -7,18 +7,19 @@ package photobooth.views;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.awt.image.RescaleOp;
 import java.io.File;
-import java.io.InputStream;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -41,60 +42,79 @@ public class ImagePane extends Pane {
     private Label contrastLabel;
     private Label brightnessLabel;
     private Label quantityLabel;
-    private int imageViewWidth = 600;
-    private int imageViewHeight = 460;
-    private final ExplorerPane backPanel;
+    private final int imageViewWidth = 600;
+    private final int imageViewHeight = 460;
+    private ExplorerPane backPanel;
+    private BufferedImage baseBuffImage;
+    private ImageView imageView;
+    private static ImagePane instance;
 
-    public ImagePane(ExplorerPane backPanel, final File imageFile) {
+    public static ImagePane getInstance() {
+        if (instance == null) {
+            instance = new ImagePane();
+        }
+        return instance;
+    }
+
+    private ImagePane() {
         this.contrast = 0;
         this.brightness = 0;
         this.quantity = 1;
-        addImagePane(imageFile);
+        addImagePane();
         addContrastControls();
         addBrightnessControls();
         addMovementControls();
         addPrintControls();
         addBackButton();
-        this.backPanel = backPanel;
     }
 
-    private void addImagePane(final File imageFile) {
+    public void init(ExplorerPane backPanel, final File imageFile) {
+            this.backPanel = backPanel;
+            this.contrast = 0;
+            this.brightness = 0;
+            this.quantity = 1;
+
         try {
-            BorderPane borderPane = new BorderPane();
-            borderPane.setLayoutX(10);
-            borderPane.setLayoutY(10);
-            borderPane.setMaxSize(imageViewWidth, imageViewHeight);
-            borderPane.setMinSize(imageViewWidth, imageViewHeight);
-            borderPane.setStyle("-fx-background-color: white");
-
-            Rectangle rect = new Rectangle(600, 400);
-            rect.setLayoutX(10);
-            rect.setLayoutY(40);
-            rect.setStroke(Color.BLUE);
-            rect.setStrokeWidth(2);
-            rect.setStrokeLineCap(StrokeLineCap.ROUND);
-            rect.setFill(Color.TRANSPARENT);
-            ImageView imageView = new ImageView();
-            BufferedImage bufImage = ImageIO.read(imageFile);
-            bufImage = Scalr.resize(bufImage, Scalr.Method.BALANCED, 1800, 1800);
-            if (bufImage.getHeight() > bufImage.getWidth()) {
-                bufImage = Scalr.rotate(bufImage, Scalr.Rotation.CW_90, (BufferedImageOp) null);
+            baseBuffImage = ImageIO.read(imageFile);
+            baseBuffImage = Scalr.resize(baseBuffImage, Scalr.Method.BALANCED, 1800, 1800);
+            if (baseBuffImage.getHeight() > baseBuffImage.getWidth()) {
+                baseBuffImage = Scalr.rotate(baseBuffImage, Scalr.Rotation.CW_90, (BufferedImageOp) null);
             }
-            ByteArrayOutputStream os = new ByteArrayOutputStream();
-            ImageIO.write(bufImage, "png", os);
-            InputStream is = new ByteArrayInputStream(os.toByteArray());
-            Image image = new Image(is, imageViewWidth, imageViewWidth, true, true);
-            imageView.setImage(image);
-            imageView.setPreserveRatio(true);
-            imageView.setSmooth(true);
-            imageView.setCache(true);
-
-            borderPane.setCenter(imageView);
-            this.getChildren().add(borderPane);
-            this.getChildren().add(rect);
-        } catch (Exception ex) {
+            WritableImage toFXImage = SwingFXUtils.toFXImage(baseBuffImage, null);
+            imageView.setImage(toFXImage);
+        } catch (IOException ex) {
             Logger.getLogger(ImagePane.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    private void addImagePane() {
+
+        BorderPane borderPane = new BorderPane();
+        borderPane.setLayoutX(10);
+        borderPane.setLayoutY(10);
+        borderPane.setMaxSize(imageViewWidth, imageViewHeight);
+        borderPane.setMinSize(imageViewWidth, imageViewHeight);
+        borderPane.setStyle("-fx-background-color: white");
+
+        Rectangle rect = new Rectangle(600, 400);
+        rect.setLayoutX(10);
+        rect.setLayoutY(40);
+        rect.setStroke(Color.BLUE);
+        rect.setStrokeWidth(2);
+        rect.setStrokeLineCap(StrokeLineCap.ROUND);
+        rect.setFill(Color.TRANSPARENT);
+        imageView = new ImageView();
+
+        imageView.setFitWidth(imageViewWidth);
+        imageView.setFitHeight(imageViewHeight);
+        imageView.setPreserveRatio(true);
+        imageView.setSmooth(true);
+        //imageView.setCache(true);
+
+        borderPane.setCenter(imageView);
+        this.getChildren().add(borderPane);
+        this.getChildren().add(rect);
+
     }
 
     private void addBrightness() {
@@ -104,6 +124,7 @@ public class ImagePane extends Pane {
             this.brightness = 10;
         }
         updateBrightnessLabel();
+        updateImageBrightnessContrast();
     }
 
     private void addContrast() {
@@ -113,6 +134,16 @@ public class ImagePane extends Pane {
             this.contrast = 10;
         }
         updateContrastLabel();
+        updateImageBrightnessContrast();
+
+    }
+
+    private void updateImageBrightnessContrast() {
+        RescaleOp rescaleOp = new RescaleOp(1 + contrast / 10f, brightness * 10, null);
+        BufferedImage bi = new BufferedImage(baseBuffImage.getWidth(), baseBuffImage.getHeight(), baseBuffImage.getType());
+        rescaleOp.filter(baseBuffImage, bi);
+        WritableImage toFXImage = SwingFXUtils.toFXImage(bi, null);
+        imageView.setImage(toFXImage);
     }
 
     private void addQuantity() {
@@ -141,6 +172,7 @@ public class ImagePane extends Pane {
             this.contrast = -10;
         }
         updateContrastLabel();
+        updateImageBrightnessContrast();
     }
 
     private void subtractBrightness() {
@@ -149,6 +181,7 @@ public class ImagePane extends Pane {
             this.brightness = -10;
         }
         updateBrightnessLabel();
+        updateImageBrightnessContrast();
     }
 
     private void subtractQuantity() {
@@ -308,9 +341,12 @@ public class ImagePane extends Pane {
         printBtn.getStyleClass().add("blueButton");
         printBtn.getStyleClass().add("movement");
         this.getChildren().add(printBtn);
+        ImagePane imagePanel = this;
         printBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                InsertCoinPane.getInstance().init(quantity, imagePanel);
+                Global.getInstance().setSceneRoot(InsertCoinPane.getInstance());
             }
         });
 
@@ -377,6 +413,7 @@ public class ImagePane extends Pane {
             @Override
             public void handle(ActionEvent event) {
                 Global.getInstance().setSceneRoot(backPanel);
+                System.gc();
             }
         });
     }

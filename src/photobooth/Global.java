@@ -9,12 +9,16 @@ import photobooth.views.HomePane;
 import photobooth.managers.LanguageManager;
 import photobooth.views.NotWorkingPane;
 import java.io.File;
+import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import photobooth.views.ExplorerPane;
+import photobooth.views.LoadingPane;
 
 /**
  *
@@ -57,7 +61,7 @@ public class Global {
     public static int getScreenWidth() {
         return screenWidth;
     }
-
+    
     public static int getScreenHeight() {
         return screenHeight;
     }
