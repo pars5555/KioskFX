@@ -44,6 +44,8 @@ public class ImagePane extends Pane {
     private Label quantityLabel;
     private final int imageViewWidth = 600;
     private final int imageViewHeight = 460;
+    private final int printViewWidth = 600;
+    private final int printViewHeight = 400;
     private ExplorerPane backPanel;
     private BufferedImage baseBuffImage;
     private ImageView imageView;
@@ -55,11 +57,16 @@ public class ImagePane extends Pane {
         }
         return instance;
     }
+    private int rectangleTop;
+    private Rectangle rect;
+    private boolean noRectMove;
+    private int minRectVerticalMargin;
 
     private ImagePane() {
         this.contrast = 0;
         this.brightness = 0;
         this.quantity = 1;
+        rectangleTop = 30;
         addImagePane();
         addContrastControls();
         addBrightnessControls();
@@ -69,16 +76,38 @@ public class ImagePane extends Pane {
     }
 
     public void init(ExplorerPane backPanel, final File imageFile) {
-            this.backPanel = backPanel;
-            this.contrast = 0;
-            this.brightness = 0;
-            this.quantity = 1;
+        this.backPanel = backPanel;
+        this.contrast = 0;
+        this.brightness = 0;
+        this.quantity = 1;
+        rectangleTop = 30;
+        rect.setLayoutY(rectangleTop + 10);
+        updateContrastLabel();
+        updateBrightnessLabel();
+        updateQuantityLabel();
 
         try {
             baseBuffImage = ImageIO.read(imageFile);
             baseBuffImage = Scalr.resize(baseBuffImage, Scalr.Method.BALANCED, 1800, 1800);
             if (baseBuffImage.getHeight() > baseBuffImage.getWidth()) {
                 baseBuffImage = Scalr.rotate(baseBuffImage, Scalr.Rotation.CW_90, (BufferedImageOp) null);
+            }
+            noRectMove = false;
+            minRectVerticalMargin = 0;
+            if (((double) baseBuffImage.getHeight()) / baseBuffImage.getWidth() <= ((double) printViewHeight) / printViewWidth) {
+                noRectMove = true;
+            } else {
+                if (((double) baseBuffImage.getHeight()) / baseBuffImage.getWidth() <= ((double) imageViewHeight) / imageViewWidth) {
+                    //means width is fit to image view
+                    int imageScaledHeightInImageView = (int) (imageViewWidth * baseBuffImage.getHeight() / ((double) baseBuffImage.getWidth()));
+                    int scaledImageTopFromImageView = (imageViewHeight - imageScaledHeightInImageView) / 2;
+                    minRectVerticalMargin = scaledImageTopFromImageView;
+                } else {
+                    //means height is fit to image view
+                    minRectVerticalMargin = 0;
+
+                }
+
             }
             WritableImage toFXImage = SwingFXUtils.toFXImage(baseBuffImage, null);
             imageView.setImage(toFXImage);
@@ -96,9 +125,9 @@ public class ImagePane extends Pane {
         borderPane.setMinSize(imageViewWidth, imageViewHeight);
         borderPane.setStyle("-fx-background-color: white");
 
-        Rectangle rect = new Rectangle(600, 400);
+        rect = new Rectangle(printViewWidth, printViewHeight);
         rect.setLayoutX(10);
-        rect.setLayoutY(40);
+        rect.setLayoutY(rectangleTop + 10);
         rect.setStroke(Color.BLUE);
         rect.setStrokeWidth(2);
         rect.setStrokeLineCap(StrokeLineCap.ROUND);
@@ -182,6 +211,30 @@ public class ImagePane extends Pane {
         }
         updateBrightnessLabel();
         updateImageBrightnessContrast();
+    }
+
+    private void setRectUp() {
+        if (noRectMove) {
+            return;
+        }
+        rectangleTop -= 10;
+        if (rectangleTop < minRectVerticalMargin) {
+            rectangleTop = minRectVerticalMargin;
+        }
+        System.err.println(rectangleTop);
+        rect.setLayoutY(rectangleTop + 10);
+    }
+
+    private void setRectDown() {
+        if (noRectMove) {
+            return;
+        }
+        rectangleTop += 10;
+        if (rectangleTop > 60 - minRectVerticalMargin) {
+            rectangleTop = 60 - minRectVerticalMargin;
+        }
+        System.err.println(rectangleTop);
+        rect.setLayoutY(rectangleTop + 10);
     }
 
     private void subtractQuantity() {
@@ -312,6 +365,7 @@ public class ImagePane extends Pane {
             @Override
             public void handle(ActionEvent event) {
 
+                setRectUp();
             }
         });
 
@@ -326,6 +380,7 @@ public class ImagePane extends Pane {
         downBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                setRectDown();
 
             }
         });

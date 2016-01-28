@@ -43,6 +43,7 @@ public class EmailPane extends Pane {
         return instance;
     }
     private Timer t;
+    private int checkDurationSeconds;
 
     private EmailPane() {
         addXButton();
@@ -50,6 +51,10 @@ public class EmailPane extends Pane {
     }
 
     public void init() {
+        final int checkInterval = 5;
+        int totalCheckDurationSeconds = 120;
+        checkDurationSeconds = 0;
+
         if (t != null) {
             t.cancel();
             t.purge();
@@ -59,15 +64,23 @@ public class EmailPane extends Pane {
 
             @Override
             public void run() {
+                checkDurationSeconds += checkInterval;
+                if (checkDurationSeconds > totalCheckDurationSeconds) {
+                    t.cancel();
+                    t.purge();
+                    Global.getInstance().setSceneRoot(HomePane.getInstance());
+                    return;
+                }
+
                 Calendar cal = Calendar.getInstance();
                 cal.add(Calendar.MINUTE, -3);
                 Date now = cal.getTime();
                 List<BufferedImage> emailImages = EmailManager.getInstance().getEmailImages(now);
                 int i = 1;
                 try {
-                    FileUtils.cleanDirectory(new File("C:\\Users\\default.User\\Desktop\\email"));
+                    FileUtils.cleanDirectory(new File("C:\\Users\\Pars\\Desktop\\email"));
                     for (BufferedImage emailImage : emailImages) {
-                        ImageIO.write(emailImage, "jpg", new File("C:\\Users\\default.User\\Desktop\\email\\" + i++ + ".jpg"));
+                        ImageIO.write(emailImage, "jpg", new File("C:\\Users\\Pars\\Desktop\\email\\" + i++ + ".jpg"));
                     }
                 } catch (IOException ex) {
                     Logger.getLogger(EmailPane.class.getName()).log(Level.SEVERE, null, ex);
@@ -75,11 +88,11 @@ public class EmailPane extends Pane {
                 if (!emailImages.isEmpty()) {
                     t.cancel();
                     t.purge();
-                    ExplorerPane.getInstance().setDir("C:\\Users\\default.User\\Desktop\\email");
+                    ExplorerPane.getInstance().setDir("C:\\Users\\Pars\\Desktop\\email");
                     Global.getInstance().setSceneRoot(ExplorerPane.getInstance());
                 }
             }
-        }, 1000, 5000);
+        }, 1000, checkInterval*1000);
     }
 
     private void addXButton() {
