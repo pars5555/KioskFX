@@ -54,7 +54,7 @@ public class HomePane extends Pane {
 
                         @Override
                         public void run() {
-                            ExplorerPane.getInstance().setDir("C:\\Users\\Pars\\Desktop\\tmp");
+                            ExplorerPane.getInstance().setDir("C:\\Users\\default.User\\Desktop\\moyka");
                             Global.getInstance().setSceneRoot(ExplorerPane.getInstance());
                         }
                     }).start();

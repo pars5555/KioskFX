@@ -6,23 +6,26 @@
 package photobooth.managers;
 
 import java.awt.image.BufferedImage;
+import org.imgscalr.Scalr;
+import photobooth.views.ImagePane.PrintType;
 
 /**
  *
  * @author default
  */
-public class ImageManager {
+abstract public class ImageManager {
 
-    private static ImageManager instance = null;
+    public static void preparePictureToPrint(BufferedImage im, int cropTopOffset, PrintType pt) {
 
-    public ImageManager() {
-
-    }
-
-    public static ImageManager getInstance() {
-        if (instance == null) {
-            instance = new ImageManager();
+        switch (pt) {
+            case DONT_CROP:
+               // baseBuffImage = Scalr.resize(baseBuffImage, Scalr.Method.BALANCED, 1800, 1800);
+                break;
+            case CROP_HEIGHT_FIT_WIDTH:
+                break;
+            case CROP_HEIGHT_NO_FIT_WIDTH:
+                break;
         }
-        return instance;
+
     }
 }

@@ -12,23 +12,28 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.text.Font;
+import javafx.scene.text.TextAlignment;
 import javax.imageio.ImageIO;
 import org.imgscalr.Scalr;
 import photobooth.Global;
+import photobooth.managers.ImageManager;
 
 /**
  *
@@ -57,16 +62,29 @@ public class ImagePane extends Pane {
         }
         return instance;
     }
+    private int rectangleInitialTop = 30;
+    public int printImageWidth =1800;
+    public int printImageHeight =1200;
     private int rectangleTop;
     private Rectangle rect;
     private boolean noRectMove;
     private int minRectVerticalMargin;
+    private boolean printFullImageBtnVisible;
+    private VBox dontCropContainer;
+    private int scaledImageTopFromImageView;
+    private int imageScaledHeightInImageView;
+
+    public enum PrintType {
+
+        DONT_CROP, CROP_HEIGHT_FIT_WIDTH, CROP_HEIGHT_NO_FIT_WIDTH
+    }
+    private PrintType pictureType;
 
     private ImagePane() {
         this.contrast = 0;
         this.brightness = 0;
         this.quantity = 1;
-        rectangleTop = 30;
+        rectangleTop = rectangleInitialTop;
         addImagePane();
         addContrastControls();
         addBrightnessControls();
@@ -80,7 +98,7 @@ public class ImagePane extends Pane {
         this.contrast = 0;
         this.brightness = 0;
         this.quantity = 1;
-        rectangleTop = 30;
+        rectangleTop = rectangleInitialTop;
         rect.setLayoutY(rectangleTop + 10);
         updateContrastLabel();
         updateBrightnessLabel();
@@ -88,21 +106,28 @@ public class ImagePane extends Pane {
 
         try {
             baseBuffImage = ImageIO.read(imageFile);
-            baseBuffImage = Scalr.resize(baseBuffImage, Scalr.Method.BALANCED, 1800, 1800);
+            baseBuffImage = Scalr.resize(baseBuffImage, Scalr.Method.BALANCED, printImageWidth, printImageWidth);
             if (baseBuffImage.getHeight() > baseBuffImage.getWidth()) {
                 baseBuffImage = Scalr.rotate(baseBuffImage, Scalr.Rotation.CW_90, (BufferedImageOp) null);
             }
             noRectMove = false;
+            printFullImageBtnVisible = false;
             minRectVerticalMargin = 0;
             if (((double) baseBuffImage.getHeight()) / baseBuffImage.getWidth() <= ((double) printViewHeight) / printViewWidth) {
+                //means width is fit to image view and height is less that rectangle height
+                pictureType = PrintType.DONT_CROP;
                 noRectMove = true;
             } else {
+                printFullImageBtnVisible = true;
+
                 if (((double) baseBuffImage.getHeight()) / baseBuffImage.getWidth() <= ((double) imageViewHeight) / imageViewWidth) {
-                    //means width is fit to image view
-                    int imageScaledHeightInImageView = (int) (imageViewWidth * baseBuffImage.getHeight() / ((double) baseBuffImage.getWidth()));
-                    int scaledImageTopFromImageView = (imageViewHeight - imageScaledHeightInImageView) / 2;
+                    //means width is fit to image view height is more that rectangle
+                    pictureType = PrintType.CROP_HEIGHT_FIT_WIDTH;
+                    imageScaledHeightInImageView = (int) (imageViewWidth * baseBuffImage.getHeight() / ((double) baseBuffImage.getWidth()));
+                    scaledImageTopFromImageView = (imageViewHeight - imageScaledHeightInImageView) / 2;
                     minRectVerticalMargin = scaledImageTopFromImageView;
                 } else {
+                    pictureType = PrintType.CROP_HEIGHT_NO_FIT_WIDTH;
                     //means height is fit to image view
                     minRectVerticalMargin = 0;
 
@@ -111,6 +136,7 @@ public class ImagePane extends Pane {
             }
             WritableImage toFXImage = SwingFXUtils.toFXImage(baseBuffImage, null);
             imageView.setImage(toFXImage);
+            dontCropContainer.setVisible(printFullImageBtnVisible);
         } catch (IOException ex) {
             Logger.getLogger(ImagePane.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -221,7 +247,11 @@ public class ImagePane extends Pane {
         if (rectangleTop < minRectVerticalMargin) {
             rectangleTop = minRectVerticalMargin;
         }
-        System.err.println(rectangleTop);
+        rect.setLayoutY(rectangleTop + 10);
+    }
+
+    private void resetRect() {
+        rectangleTop = rectangleInitialTop;
         rect.setLayoutY(rectangleTop + 10);
     }
 
@@ -233,7 +263,6 @@ public class ImagePane extends Pane {
         if (rectangleTop > 60 - minRectVerticalMargin) {
             rectangleTop = 60 - minRectVerticalMargin;
         }
-        System.err.println(rectangleTop);
         rect.setLayoutY(rectangleTop + 10);
     }
 
@@ -385,6 +414,34 @@ public class ImagePane extends Pane {
             }
         });
 
+        dontCropContainer = new VBox();
+        CheckBox ch = new CheckBox();
+        BorderPane bp = new BorderPane(ch);
+        dontCropContainer.setLayoutX(700);
+        dontCropContainer.setLayoutY(190);
+        ch.getStyleClass().add("check-box");
+        Label text = new Label("Don't Crop");
+        text.setTextAlignment(TextAlignment.CENTER);
+        dontCropContainer.getChildren().addAll(bp, text);
+        dontCropContainer.setSpacing(5);
+        this.getChildren().add(dontCropContainer);
+        ch.selectedProperty().addListener(new ChangeListener<Boolean>() {
+            public void changed(ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) {
+                if (ch.isSelected()) {
+                    imageView.setFitWidth(printViewWidth);
+                    imageView.setFitHeight(printViewHeight);
+                    noRectMove = true;
+                    resetRect();
+
+                } else {
+                    imageView.setFitWidth(imageViewWidth);
+                    imageView.setFitHeight(imageViewHeight);
+                    noRectMove = false;
+                    resetRect();
+                }
+            }
+        });
+
     }
 
     private void addPrintControls() {
@@ -400,6 +457,25 @@ public class ImagePane extends Pane {
         printBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                if (pictureType == PrintType.DONT_CROP || noRectMove) {
+                    //mean print without cropping (whole picture)
+                    ImageManager.preparePictureToPrint(baseBuffImage, 0,PrintType.DONT_CROP );
+                } else {
+                    if (pictureType == PrintType.CROP_HEIGHT_FIT_WIDTH) {
+                        int originalImageHeight = baseBuffImage.getHeight();
+                        int delta = rectangleTop - scaledImageTopFromImageView;
+                        int pixelFromTopToCrop = delta * originalImageHeight / imageScaledHeightInImageView;
+                        System.err.println(pixelFromTopToCrop);
+                        ImageManager.preparePictureToPrint(baseBuffImage, pixelFromTopToCrop,PrintType.CROP_HEIGHT_FIT_WIDTH );
+                    } 
+                    if (pictureType == PrintType.CROP_HEIGHT_NO_FIT_WIDTH) {
+                        int originalImageHeight = baseBuffImage.getHeight();
+                        int pixelFromTopToCrop = rectangleTop * originalImageHeight / imageViewHeight;
+                        System.err.println(pixelFromTopToCrop);
+                        ImageManager.preparePictureToPrint(baseBuffImage, pixelFromTopToCrop,PrintType.CROP_HEIGHT_NO_FIT_WIDTH );
+                    }
+                }
+                
                 InsertCoinPane.getInstance().init(quantity, imagePanel);
                 Global.getInstance().setSceneRoot(InsertCoinPane.getInstance());
             }

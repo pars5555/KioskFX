@@ -78,9 +78,9 @@ public class EmailPane extends Pane {
                 List<BufferedImage> emailImages = EmailManager.getInstance().getEmailImages(now);
                 int i = 1;
                 try {
-                    FileUtils.cleanDirectory(new File("C:\\Users\\Pars\\Desktop\\email"));
+                    FileUtils.cleanDirectory(new File("C:\\Users\\default.User\\Desktop\\email"));
                     for (BufferedImage emailImage : emailImages) {
-                        ImageIO.write(emailImage, "jpg", new File("C:\\Users\\Pars\\Desktop\\email\\" + i++ + ".jpg"));
+                        ImageIO.write(emailImage, "jpg", new File("C:\\Users\\default.User\\Desktop\\email\\" + i++ + ".jpg"));
                     }
                 } catch (IOException ex) {
                     Logger.getLogger(EmailPane.class.getName()).log(Level.SEVERE, null, ex);
@@ -88,7 +88,7 @@ public class EmailPane extends Pane {
                 if (!emailImages.isEmpty()) {
                     t.cancel();
                     t.purge();
-                    ExplorerPane.getInstance().setDir("C:\\Users\\Pars\\Desktop\\email");
+                    ExplorerPane.getInstance().setDir("C:\\Users\\default.User\\Desktop\\email");
                     Global.getInstance().setSceneRoot(ExplorerPane.getInstance());
                 }
             }
