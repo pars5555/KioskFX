@@ -6,7 +6,10 @@
 package photobooth.managers;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.io.File;
@@ -25,21 +28,32 @@ import photobooth.views.ImagePane.PrintType;
 abstract public class ImageManager {
 
     public static void preparePictureToPrint(BufferedImage im, int cropTopOffset, PrintType pt) {
-
-        switch (pt) {
-            case DONT_CROP:
-                BufferedImage bi = Scalr.resize(im, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, ImagePane.printImageWidth, ImagePane.printImageHeight, null);
-                bi = Scalr.resize(bi, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_HEIGHT, ImagePane.printImageWidth, ImagePane.printImageHeight, null);
-                BufferedImage finalBi = createEmptyBufferedImage(ImagePane.printImageWidth, ImagePane.printImageHeight, bi.getType());
-                copySrcIntoDstAt(bi, finalBi, 100, 0);
-                break;
-            case CROP_HEIGHT_FIT_WIDTH:
-                break;
-            case CROP_HEIGHT_NO_FIT_WIDTH:
-                break;
+        try {
+            BufferedImage finalBi = null;
+            switch (pt) {
+                case DONT_CROP:
+                    BufferedImage bi = Scalr.resize(im, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, ImagePane.printImageWidth, ImagePane.printImageHeight, null);
+                    bi = Scalr.resize(bi, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_HEIGHT, ImagePane.printImageWidth, ImagePane.printImageHeight, null);
+                    finalBi = createEmptyBufferedImage(ImagePane.printImageWidth, ImagePane.printImageHeight, bi.getType());
+                    copySrcIntoDstAt(bi, finalBi, 100, 0);
+                    break;
+                case CROP_HEIGHT_FIT_WIDTH:
+                    int top = cropTopOffset * im.getHeight() / ImagePane.imageViewHeight;  
+                    System.err.println(cropTopOffset);
+                    System.err.println(top);
+                    ImageIO.write(im, "png", new File("D:\\aaa1.png"));
+                    finalBi = im.getSubimage(0, top, 1800, 1200);
+                    ImageIO.write(finalBi, "png", new File("D:\\aaa.png"));
+                    break;
+                case CROP_HEIGHT_NO_FIT_WIDTH:
+                    break;
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(ImageManager.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
+
 
     private static BufferedImage createEmptyBufferedImage(int width, int height, int type) {
         BufferedImage ret = new BufferedImage(width, height, type);

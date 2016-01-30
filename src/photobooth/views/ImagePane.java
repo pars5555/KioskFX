@@ -47,8 +47,8 @@ public class ImagePane extends Pane {
     private Label contrastLabel;
     private Label brightnessLabel;
     private Label quantityLabel;
-    private final int imageViewWidth = 600;
-    private final int imageViewHeight = 460;
+    public static int imageViewWidth = 600;
+    public static int imageViewHeight = 460;
     private final int printViewWidth = 600;
     private final int printViewHeight = 400;
     private ExplorerPane backPanel;
