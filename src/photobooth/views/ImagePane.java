@@ -63,8 +63,8 @@ public class ImagePane extends Pane {
         return instance;
     }
     private int rectangleInitialTop = 30;
-    public int printImageWidth =1800;
-    public int printImageHeight =1200;
+    public static int printImageWidth =1800;
+    public static int printImageHeight =1200;
     private int rectangleTop;
     private Rectangle rect;
     private boolean noRectMove;
@@ -73,6 +73,7 @@ public class ImagePane extends Pane {
     private VBox dontCropContainer;
     private int scaledImageTopFromImageView;
     private int imageScaledHeightInImageView;
+    private CheckBox noCropCheckbox;
 
     public enum PrintType {
 
@@ -103,6 +104,7 @@ public class ImagePane extends Pane {
         updateContrastLabel();
         updateBrightnessLabel();
         updateQuantityLabel();
+        noCropCheckbox.setSelected(false);
 
         try {
             baseBuffImage = ImageIO.read(imageFile);
@@ -415,19 +417,19 @@ public class ImagePane extends Pane {
         });
 
         dontCropContainer = new VBox();
-        CheckBox ch = new CheckBox();
-        BorderPane bp = new BorderPane(ch);
+        noCropCheckbox = new CheckBox();
+        BorderPane bp = new BorderPane(noCropCheckbox);
         dontCropContainer.setLayoutX(700);
         dontCropContainer.setLayoutY(190);
-        ch.getStyleClass().add("check-box");
+        noCropCheckbox.getStyleClass().add("check-box");
         Label text = new Label("Don't Crop");
         text.setTextAlignment(TextAlignment.CENTER);
         dontCropContainer.getChildren().addAll(bp, text);
         dontCropContainer.setSpacing(5);
         this.getChildren().add(dontCropContainer);
-        ch.selectedProperty().addListener(new ChangeListener<Boolean>() {
+        noCropCheckbox.selectedProperty().addListener(new ChangeListener<Boolean>() {
             public void changed(ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) {
-                if (ch.isSelected()) {
+                if (noCropCheckbox.isSelected()) {
                     imageView.setFitWidth(printViewWidth);
                     imageView.setFitHeight(printViewHeight);
                     noRectMove = true;
