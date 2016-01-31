@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
@@ -34,6 +35,7 @@ import javax.imageio.ImageIO;
 import org.imgscalr.Scalr;
 import photobooth.Global;
 import photobooth.managers.ImageManager;
+import static photobooth.managers.ImageManager.preparePictureToPrint;
 
 /**
  *
@@ -49,8 +51,8 @@ public class ImagePane extends Pane {
     private Label quantityLabel;
     public static int imageViewWidth = 600;
     public static int imageViewHeight = 460;
-    private final int printViewWidth = 600;
-    private final int printViewHeight = 400;
+    public static int printViewWidth = 600;
+    public static int printViewHeight = 400;
     private ExplorerPane backPanel;
     private BufferedImage baseBuffImage;
     private ImageView imageView;
@@ -63,8 +65,8 @@ public class ImagePane extends Pane {
         return instance;
     }
     private int rectangleInitialTop = 30;
-    public static int printImageWidth =1800;
-    public static int printImageHeight =1200;
+    public static int printImageWidth = 1800;
+    public static int printImageHeight = 1200;
     private int rectangleTop;
     private Rectangle rect;
     private boolean noRectMove;
@@ -459,27 +461,38 @@ public class ImagePane extends Pane {
         printBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                if (pictureType == PrintType.DONT_CROP || noRectMove) {
-                    //mean print without cropping (whole picture)
-                    ImageManager.preparePictureToPrint(baseBuffImage, 0,PrintType.DONT_CROP );
-                } else {
-                    if (pictureType == PrintType.CROP_HEIGHT_FIT_WIDTH) {
-                        int originalImageHeight = baseBuffImage.getHeight();
-                        int delta = rectangleTop - scaledImageTopFromImageView;
-                        int pixelFromTopToCrop = delta * originalImageHeight / imageScaledHeightInImageView;
-                        System.err.println(pixelFromTopToCrop);
-                        ImageManager.preparePictureToPrint(baseBuffImage, pixelFromTopToCrop,PrintType.CROP_HEIGHT_FIT_WIDTH );
-                    } 
-                    if (pictureType == PrintType.CROP_HEIGHT_NO_FIT_WIDTH) {
-                        int originalImageHeight = baseBuffImage.getHeight();
-                        int pixelFromTopToCrop = rectangleTop * originalImageHeight / imageViewHeight;
-                        System.err.println(pixelFromTopToCrop);
-                        ImageManager.preparePictureToPrint(baseBuffImage, pixelFromTopToCrop,PrintType.CROP_HEIGHT_NO_FIT_WIDTH );
-                    }
-                }
-                
-                InsertCoinPane.getInstance().init(quantity, imagePanel);
-                Global.getInstance().setSceneRoot(InsertCoinPane.getInstance());
+
+                Global.getInstance().setSceneRoot(LoadingPane.getInstance());
+
+                Platform.runLater(() -> {
+                    new Thread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            BufferedImage preparePictureToPrint = null;
+                            if (pictureType == PrintType.DONT_CROP || noRectMove) {
+                                //mean print without cropping (whole picture)
+                                preparePictureToPrint = ImageManager.preparePictureToPrint(baseBuffImage, 0, PrintType.DONT_CROP);
+                            } else {
+                                if (pictureType == PrintType.CROP_HEIGHT_FIT_WIDTH) {
+                                    int originalImageHeight = baseBuffImage.getHeight();
+                                    int delta = rectangleTop - scaledImageTopFromImageView;
+                                    int pixelFromTopToCrop = delta * originalImageHeight / imageScaledHeightInImageView;
+                                    preparePictureToPrint = ImageManager.preparePictureToPrint(baseBuffImage, pixelFromTopToCrop, PrintType.CROP_HEIGHT_FIT_WIDTH);
+                                }
+                                if (pictureType == PrintType.CROP_HEIGHT_NO_FIT_WIDTH) {
+                                    int originalImageHeight = baseBuffImage.getHeight();
+                                    int pixelFromTopToCrop = rectangleTop * originalImageHeight / imageViewHeight;
+                                    System.err.println(pixelFromTopToCrop);
+                                    preparePictureToPrint = ImageManager.preparePictureToPrint(baseBuffImage, pixelFromTopToCrop, PrintType.CROP_HEIGHT_NO_FIT_WIDTH);
+                                }
+                            }
+                            InsertCoinPane.getInstance().init(quantity, preparePictureToPrint, imagePanel);
+                            Global.getInstance().setSceneRoot(InsertCoinPane.getInstance());
+                        }
+                    }).start();
+                });
+
             }
         });
 

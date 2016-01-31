@@ -5,10 +5,14 @@
  */
 package photobooth.views;
 
+import java.awt.image.BufferedImage;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -22,12 +26,15 @@ import photobooth.Global;
 public class InsertCoinPane extends Pane {
 
     private static InsertCoinPane instance = null;
-    private Label l;
+    private Label insertLabel;
     private ImagePane backPanel;
+    private ImageView imageView;
+    private Label insertedLabel;
 
     private InsertCoinPane() {
         addXButton();
         addLabel();
+        addImageView();
     }
 
     public static InsertCoinPane getInstance() {
@@ -52,28 +59,53 @@ public class InsertCoinPane extends Pane {
         });
     }
 
-    public void init(int picturesCount, ImagePane ip) {
+    public void init(int picturesCount, BufferedImage bi, ImagePane ip) {
         initCoinAcceptor();
         backPanel = ip;
-        l.setText("Insert " + picturesCount * 100 + " AMD to print");
+        WritableImage toFXImage = SwingFXUtils.toFXImage(bi, null);
+        imageView.setImage(toFXImage);
+        insertLabel.setText("Insert " + picturesCount * 100 + " AMD to print");
     }
 
     private void addLabel() {
-        l = new Label("Insert ");
-        l.setWrapText(true);
-        l.setLayoutX(50);
-        l.setLayoutY(200);
-        l.setMaxWidth(700);
-        l.setTextAlignment(TextAlignment.CENTER);
-        l.setFont(new Font(40));
-        l.setTextFill(Color.web("#000"));
-        this.getChildren().add(l);
+        Label qtyLabel = new Label("Quantity: ");
+        qtyLabel.setLayoutX(50);
+        qtyLabel.setLayoutY(330);
+        qtyLabel.setFont(new Font(30));
+        qtyLabel.setTextFill(Color.web("#000"));
+        this.getChildren().add(qtyLabel);
+        
+        insertLabel = new Label("Insert ");
+        insertLabel.setLayoutX(50);
+        insertLabel.setLayoutY(370);
+        insertLabel.setFont(new Font(30));
+        insertLabel.setTextFill(Color.web("#000"));
+        this.getChildren().add(insertLabel);
+        
+        insertedLabel = new Label("Inserted: 0 AMD");
+        insertedLabel.setLayoutX(50);
+        insertedLabel.setLayoutY(410);
+        insertedLabel.setFont(new Font(30));
+        insertedLabel.setTextFill(Color.web("#000"));
+        this.getChildren().add(insertedLabel);
     }
 
     private void initCoinAcceptor() {
     }
 
     private void destroyCoinAcceptor() {
+    }
+
+    private void addImageView() {
+        imageView = new ImageView();
+        imageView.setLayoutX(150);
+        imageView.setLayoutY(20);
+        imageView.setFitWidth(450);
+        imageView.setFitHeight(300);
+        imageView.setPreserveRatio(true);
+        imageView.setSmooth(true);
+        this.getChildren().add(imageView);
+
     }
 
 }
