@@ -96,6 +96,8 @@ public class ExplorerPane extends Pane {
                 return file.isDirectory();
             }
         });
+        File[] allFileAndDiresctoies = new File[0];
+        if (listOfDirs!= null){
         Arrays.sort(listOfDirs);
 
         File[] listOfImages = folder.listFiles(new FileFilter() {
@@ -107,7 +109,7 @@ public class ExplorerPane extends Pane {
             }
         });
         Arrays.sort(listOfImages);
-        File[] allFileAndDiresctoies = new File[listOfDirs.length + listOfImages.length];
+        allFileAndDiresctoies = new File[listOfDirs.length + listOfImages.length];
         System.arraycopy(listOfDirs, 0, allFileAndDiresctoies, 0, listOfDirs.length);
         System.arraycopy(listOfImages, 0, allFileAndDiresctoies, listOfDirs.length, listOfImages.length);
 
@@ -154,7 +156,7 @@ public class ExplorerPane extends Pane {
 
             }
         }
-
+        }
         this.getChildren().add(tile);
         tile.setMinWidth(800);
         tile.setMaxWidth(800);

@@ -37,6 +37,7 @@ public class Config {
 
     private boolean loadIniSettings() {
         //String jarDir = Global.getJarDir();
+        
         String jarDir = "C:\\Users\\default.User\\Documents\\Git\\KioskFX";
         try {
             ini = new Wini(new File(jarDir + "/config.ini"));

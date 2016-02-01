@@ -221,9 +221,9 @@ public class ServerConnection implements Runnable {
             if (!checkConnectionToServer()) {
                 continue;
             }
-            String serverJsonResponse = pingToServer();
-            Global.print("server response: " + serverJsonResponse);
-            doDeviceActions(serverJsonResponse);
+           // String serverJsonResponse = pingToServer();
+           // Global.print("server response: " + serverJsonResponse);
+            //doDeviceActions(serverJsonResponse);
             Global.delay(2000);
         }
 

@@ -5,9 +5,13 @@
  */
 package photobooth.views;
 
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
+import java.awt.image.RenderedImage;
 import java.awt.image.RescaleOp;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -21,6 +25,7 @@ import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
@@ -35,7 +40,6 @@ import javax.imageio.ImageIO;
 import org.imgscalr.Scalr;
 import photobooth.Global;
 import photobooth.managers.ImageManager;
-import static photobooth.managers.ImageManager.preparePictureToPrint;
 
 /**
  *
@@ -145,6 +149,29 @@ public class ImagePane extends Pane {
             Logger.getLogger(ImagePane.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    public static javafx.scene.image.Image convertToJavaFXImage(java.awt.Image image){
+        try {
+            if (!(image instanceof RenderedImage)) {
+                BufferedImage bufferedImage = new BufferedImage(image.getWidth(null),
+                        image.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+                Graphics g = bufferedImage.createGraphics();
+                g.drawImage(image, 0, 0, null);
+                g.dispose();
+                image = bufferedImage;
+            }
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ImageIO.write((RenderedImage) image, "png", out);
+            out.flush();
+            ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
+            Image image1 = new Image(in);
+            
+            return image1;
+        } catch (IOException ex) {
+            Logger.getLogger(ImagePane.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+  }
 
     private void addImagePane() {
 

@@ -5,8 +5,7 @@
  */
 package photobooth.views;
 
-import java.util.Timer;
-import java.util.TimerTask;
+import java.io.File;
 import javafx.application.Platform;
 import photobooth.Global;
 import javafx.event.ActionEvent;
@@ -48,14 +47,42 @@ public class HomePane extends Pane {
             public void handle(ActionEvent event) {
 
                 Global.getInstance().setSceneRoot(LoadingPane.getInstance());
-
+                
                 Platform.runLater(() -> {
                     new Thread(new Runnable() {
 
                         @Override
                         public void run() {
-                            ExplorerPane.getInstance().setDir("C:\\Users\\default.User\\Desktop\\moyka");
-                            Global.getInstance().setSceneRoot(ExplorerPane.getInstance());
+                            File[] roots = File.listRoots();                         
+                            for (int i = 0; i < roots.length; i++) {
+                                String path = roots[i].getPath();
+                                if (path.startsWith("E")) {
+                                    ExplorerPane.getInstance().setDir("E:\\");
+                                    Global.getInstance().setSceneRoot(ExplorerPane.getInstance());
+                                    return;
+                                }
+                                if (path.startsWith("F")) {
+                                    ExplorerPane.getInstance().setDir("F:\\");
+                                    Global.getInstance().setSceneRoot(ExplorerPane.getInstance());
+                                    return;
+                                }
+                                if (path.startsWith("G")) {
+                                    ExplorerPane.getInstance().setDir("G:\\");
+                                    Global.getInstance().setSceneRoot(ExplorerPane.getInstance());
+                                    return;
+                                }
+                                if (path.startsWith("H")) {
+                                    ExplorerPane.getInstance().setDir("H:\\");
+                                    Global.getInstance().setSceneRoot(ExplorerPane.getInstance());
+                                    return;
+                                }
+                                if (path.startsWith("I")) {
+                                    ExplorerPane.getInstance().setDir("I:\\");
+                                    Global.getInstance().setSceneRoot(ExplorerPane.getInstance());
+                                    return;
+                                }
+                            }
+                            Global.getInstance().setSceneRoot(HomePane.getInstance());
                         }
                     }).start();
                 });
