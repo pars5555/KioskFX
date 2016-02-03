@@ -83,10 +83,9 @@ public class ExplorerPane extends Pane {
         }
         addLabel();
 
-        TilePane tile = new TilePane();
-        tile.setPadding(new Insets(10, 10, 10, 10));
-        tile.setHgap(10);
-        tile.setVgap(10);
+        TilePane tile = new TilePane();       
+        tile.setHgap(12);
+        tile.setVgap(12);
 
         File folder = new File(dir);
         File[] listOfDirs = folder.listFiles(new FileFilter() {
@@ -158,16 +157,22 @@ public class ExplorerPane extends Pane {
         }
         }
         this.getChildren().add(tile);
-        tile.setMinWidth(800);
-        tile.setMaxWidth(800);
-        tile.setLayoutY(50);
-        tile.setMaxHeight(380);
+        tile.setMinWidth(670);
+        tile.setMaxWidth(670);
+        tile.setLayoutX(80);
+        tile.setStyle("-fx-background-color: red;");
+        tile.setLayoutY(70);
+        tile.setMaxHeight(390);
 
         if (allFileAndDiresctoies.length > offset + limit) {
             addNextButton();
         }
         if (offset > 0) {
-            addPrevButton();
+            try {
+                addPrevButton();
+            } catch (IOException ex) {
+                Logger.getLogger(ExplorerPane.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 
@@ -179,10 +184,10 @@ public class ExplorerPane extends Pane {
         ImageView imageView = null;
         BorderPane borderPane = new BorderPane();
         try {
-            borderPane.setMaxSize(110, 110);
-            borderPane.setMinSize(110, 110);
+            borderPane.setMaxSize(100, 100);
+            borderPane.setMinSize(100, 100);
             FileInputStream fileInputStream = new FileInputStream(imageFile);
-            final Image image = new Image(fileInputStream, 110, 110, true, true);
+            final Image image = new Image(fileInputStream, 100, 100, true, true);
             imageView = new ImageView(image);
             fileInputStream.close();
             imageView.getStyleClass().add("image-view");
@@ -294,11 +299,12 @@ public class ExplorerPane extends Pane {
         });
     }
 
-    private void addPrevButton() {
-        Button button = new Button("<");
+    private void addPrevButton() throws IOException {
+        Button button = new Button();
+        button.setGraphic(new ImageView(new Image(getClass().getResource("/photobooth/images/prev.png").openStream())));
         button.setLayoutX(270);
         button.setLayoutY(420);
-        button.getStyleClass().add("blueButton");
+        button.getStyleClass().add("navButton");
         this.getChildren().add(button);
         button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
