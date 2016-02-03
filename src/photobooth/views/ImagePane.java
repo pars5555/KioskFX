@@ -149,8 +149,8 @@ public class ImagePane extends Pane {
             Logger.getLogger(ImagePane.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    public static javafx.scene.image.Image convertToJavaFXImage(java.awt.Image image){
+
+    public static javafx.scene.image.Image convertToJavaFXImage(java.awt.Image image) {
         try {
             if (!(image instanceof RenderedImage)) {
                 BufferedImage bufferedImage = new BufferedImage(image.getWidth(null),
@@ -165,13 +165,13 @@ public class ImagePane extends Pane {
             out.flush();
             ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
             Image image1 = new Image(in);
-            
+
             return image1;
         } catch (IOException ex) {
             Logger.getLogger(ImagePane.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
-  }
+    }
 
     private void addImagePane() {
 
@@ -225,11 +225,15 @@ public class ImagePane extends Pane {
     }
 
     private void updateImageBrightnessContrast() {
-        RescaleOp rescaleOp = new RescaleOp(1 + contrast / 10f, brightness * 10, null);
-        BufferedImage bi = new BufferedImage(baseBuffImage.getWidth(), baseBuffImage.getHeight(), baseBuffImage.getType());
-        rescaleOp.filter(baseBuffImage, bi);
-        WritableImage toFXImage = SwingFXUtils.toFXImage(bi, null);
+        WritableImage toFXImage = SwingFXUtils.toFXImage(getBufferedImageBrightnessContrast(), null);
         imageView.setImage(toFXImage);
+    }
+
+    private BufferedImage getBufferedImageBrightnessContrast() {
+        RescaleOp rescaleOp = new RescaleOp(1 + contrast / 10f, brightness * 10, null);
+        BufferedImage bi = new BufferedImage(baseBuffImage.getWidth(), baseBuffImage.getHeight(),BufferedImage.TYPE_INT_RGB);
+        rescaleOp.filter(baseBuffImage, bi);
+        return bi;
     }
 
     private void addQuantity() {
@@ -496,26 +500,28 @@ public class ImagePane extends Pane {
 
                         @Override
                         public void run() {
+                            BufferedImage bufferedImageBrightnessContrast = getBufferedImageBrightnessContrast();
+
                             BufferedImage preparePictureToPrint = null;
                             if (pictureType == PrintType.DONT_CROP || noRectMove) {
                                 //mean print without cropping (whole picture)
-                                preparePictureToPrint = ImageManager.preparePictureToPrint(baseBuffImage, 0, PrintType.DONT_CROP);
+                                preparePictureToPrint = ImageManager.preparePictureToPrint(bufferedImageBrightnessContrast, 0, PrintType.DONT_CROP);
                             } else {
                                 if (pictureType == PrintType.CROP_HEIGHT_FIT_WIDTH) {
-                                    int originalImageHeight = baseBuffImage.getHeight();
+                                    int originalImageHeight = bufferedImageBrightnessContrast.getHeight();
                                     int delta = rectangleTop - scaledImageTopFromImageView;
                                     int pixelFromTopToCrop = delta * originalImageHeight / imageScaledHeightInImageView;
-                                    preparePictureToPrint = ImageManager.preparePictureToPrint(baseBuffImage, pixelFromTopToCrop, PrintType.CROP_HEIGHT_FIT_WIDTH);
+                                    preparePictureToPrint = ImageManager.preparePictureToPrint(bufferedImageBrightnessContrast, pixelFromTopToCrop, PrintType.CROP_HEIGHT_FIT_WIDTH);
                                 }
                                 if (pictureType == PrintType.CROP_HEIGHT_NO_FIT_WIDTH) {
-                                    int originalImageHeight = baseBuffImage.getHeight();
+                                    int originalImageHeight = bufferedImageBrightnessContrast.getHeight();
                                     int pixelFromTopToCrop = rectangleTop * originalImageHeight / imageViewHeight;
                                     System.err.println(pixelFromTopToCrop);
-                                    preparePictureToPrint = ImageManager.preparePictureToPrint(baseBuffImage, pixelFromTopToCrop, PrintType.CROP_HEIGHT_NO_FIT_WIDTH);
+                                    preparePictureToPrint = ImageManager.preparePictureToPrint(bufferedImageBrightnessContrast, pixelFromTopToCrop, PrintType.CROP_HEIGHT_NO_FIT_WIDTH);
                                 }
                             }
-                            InsertCoinPane.getInstance().init(quantity, preparePictureToPrint, imagePanel);
-                            Global.getInstance().setSceneRoot(InsertCoinPane.getInstance());
+                            PrintPane.getInstance().init(quantity, preparePictureToPrint, imagePanel);
+                            Global.getInstance().setSceneRoot(PrintPane.getInstance());
                         }
                     }).start();
                 });

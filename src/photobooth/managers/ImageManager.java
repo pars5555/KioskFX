@@ -38,7 +38,7 @@ abstract public class ImageManager {
                 } else {
                     bi = Scalr.resize(im, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, ImagePane.printImageWidth, (BufferedImageOp) null);
                 }
-                finalBi = createEmptyBufferedImage(ImagePane.printImageWidth, ImagePane.printImageHeight, bi.getType());
+                finalBi = createEmptyBufferedImage(ImagePane.printImageWidth, ImagePane.printImageHeight, BufferedImage.TYPE_INT_RGB);
                 copySrcIntoDstAt(bi, finalBi, (finalBi.getWidth() - bi.getWidth()) / 2, (finalBi.getHeight() - bi.getHeight()) / 2);
                 break;
             case CROP_HEIGHT_FIT_WIDTH:
@@ -48,7 +48,7 @@ abstract public class ImageManager {
                 int h = ImagePane.printViewHeight * im.getHeight() / ImagePane.imageViewHeight;
                 bi = im.getSubimage(0, cropTopOffset, im.getWidth(), h);
                 bi = Scalr.resize(bi, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_HEIGHT, ImagePane.printImageHeight, (BufferedImageOp) null);
-                finalBi = createEmptyBufferedImage(ImagePane.printImageWidth, ImagePane.printImageHeight, bi.getType());
+                finalBi = createEmptyBufferedImage(ImagePane.printImageWidth, ImagePane.printImageHeight, BufferedImage.TYPE_INT_RGB);
                 copySrcIntoDstAt(bi, finalBi, (finalBi.getWidth() - bi.getWidth()) / 2, (finalBi.getHeight() - bi.getHeight()) / 2);
                 break;
         }
@@ -65,8 +65,7 @@ abstract public class ImageManager {
         return ret;
     }
 
-    private static void copySrcIntoDstAt(final BufferedImage src,
-            final BufferedImage dst, final int dx, final int dy) {
+    private static void copySrcIntoDstAt(final BufferedImage src, final BufferedImage dst, final int dx, final int dy) {
         int[] srcbuf = ((DataBufferInt) src.getRaster().getDataBuffer()).getData();
         int[] dstbuf = ((DataBufferInt) dst.getRaster().getDataBuffer()).getData();
         int width = src.getWidth();

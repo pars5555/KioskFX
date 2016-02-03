@@ -53,6 +53,11 @@ public class HomePane extends Pane {
 
                         @Override
                         public void run() {
+                              ExplorerPane.getInstance().setDir("C:\\Users\\default.User\\Google Drive\\New folder");
+                            Global.getInstance().setSceneRoot(ExplorerPane.getInstance());
+                            /*
+                            
+                            
                             File[] roots = File.listRoots();                         
                             for (int i = 0; i < roots.length; i++) {
                                 String path = roots[i].getPath();
@@ -82,7 +87,7 @@ public class HomePane extends Pane {
                                     return;
                                 }
                             }
-                            Global.getInstance().setSceneRoot(HomePane.getInstance());
+                            Global.getInstance().setSceneRoot(HomePane.getInstance());*/
                         }
                     }).start();
                 });

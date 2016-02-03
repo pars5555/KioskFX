@@ -6,18 +6,28 @@
 package photobooth.managers;
 
 import java.awt.image.BufferedImage;
-import java.awt.print.Book;
-import java.awt.print.PageFormat;
-import java.awt.print.Paper;
-import java.awt.print.PrinterJob;
+import java.awt.image.BufferedImageOp;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import javax.print.Doc;
+import javax.print.DocFlavor;
+import javax.print.DocPrintJob;
+import javax.print.PrintException;
+import javax.print.PrintService;
+import javax.print.PrintServiceLookup;
+import javax.print.SimpleDoc;
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
 import javax.print.attribute.standard.Copies;
 import javax.print.attribute.standard.MediaPrintableArea;
-import javax.print.attribute.standard.PrinterResolution;
-
+import javax.print.attribute.standard.OrientationRequested;
+import javax.print.attribute.standard.PrintQuality;
+import org.imgscalr.Scalr;
 
 /**
  *
@@ -25,45 +35,33 @@ import javax.print.attribute.standard.PrinterResolution;
  */
 public class PrintManager {
 
-    private static PrintManager instance = null;
-
-    public PrintManager() {
-
-    }
-
-    public static PrintManager getInstance() {
-        if (instance == null) {
-            instance = new PrintManager();
-        }
-        return instance;
-    }
-
-    private boolean printLabelWithLabelPrinter(BufferedImage image, PrinterJob job, int qty) {
-        try {           
-          
-            Book book = new Book();
-            PageFormat pf = job.defaultPage();
-            Paper paper = new Paper();
-            double paperWidth = 1800;
-            double paperHeight = 1200;
-            paper.setSize(paperWidth, paperHeight);
-            paper.setImageableArea(0, 0, paperWidth, paperHeight);
-            pf.setPaper(paper);
-
-            PrintRequestAttributeSet pras = new HashPrintRequestAttributeSet();
-            pras.add(new Copies(qty));
-            pras.add(new PrinterResolution(300, 300, PrinterResolution.DPI));
-            pras.add(new MediaPrintableArea(0, 0, 100, 150, MediaPrintableArea.MM));
-
-            book.append(new Printable10x15(image), pf, 1);
-            job.setPageable(book);
-
-            job.print(pras);
-            return true;
-        } catch (Exception ex) {
+    public static boolean print(BufferedImage image, int qty) {
+        try {
+            image = Scalr.rotate(image, Scalr.Rotation.CW_90, (BufferedImageOp) null);
+            PrintRequestAttributeSet aset = createAsetForMedia();
+            PrintService ps = PrintServiceLookup.lookupDefaultPrintService();
+            DocPrintJob job = ps.createPrintJob();
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            ImageIO.write(image, "jpg", os);
+            InputStream is = new ByteArrayInputStream(os.toByteArray());
+            Doc doc = new SimpleDoc(is, DocFlavor.INPUT_STREAM.JPEG, null);
+            job.print(doc, aset);
+            is.close();
+        } catch (PrintException ex) {
             Logger.getLogger(PrintManager.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
+        } catch (IOException ex) {
+            Logger.getLogger(PrintManager.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return true;
+    }
+
+    private static PrintRequestAttributeSet createAsetForMedia() {
+        PrintRequestAttributeSet aset = new HashPrintRequestAttributeSet();
+        aset.add(PrintQuality.NORMAL);
+        aset.add(OrientationRequested.PORTRAIT);
+        aset.add(new MediaPrintableArea(0, 0, 4, 6,
+                MediaPrintableArea.INCH));
+        return aset;
     }
 
 }
