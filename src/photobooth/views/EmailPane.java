@@ -20,7 +20,8 @@ import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import photobooth.Global;
 import javafx.scene.control.Label;
-import javafx.scene.layout.Pane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
@@ -32,7 +33,7 @@ import photobooth.managers.EmailManager;
  *
  * @author default
  */
-public class EmailPane extends Pane {
+public class EmailPane extends MyPane {
 
     private static EmailPane instance;
 
@@ -96,12 +97,20 @@ public class EmailPane extends Pane {
     }
 
     private void addXButton() {
-        Button exitButton = new Button("X");
-        exitButton.setLayoutX(720);
-        exitButton.setLayoutY(10);
-        exitButton.getStyleClass().add("blueButton");
-        this.getChildren().add(exitButton);
-        exitButton.setOnAction(new EventHandler<ActionEvent>() {
+       Button button = new Button();
+        try {
+            button.setGraphic(new ImageView(new Image(getClass().getResource("/photobooth/images/exit.png").openStream())));
+        } catch (IOException ex) {
+            Logger.getLogger(EmailPane.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        button.setStyle("-fx-background-color: transparent;");
+        button.setLayoutX(730);
+        button.setLayoutY(10);
+        button.setMaxSize(50, 50);
+        button.setMinSize(50, 50);
+        button.getStyleClass().add("blueButton");
+        this.getChildren().add(button);
+        button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 t.cancel();

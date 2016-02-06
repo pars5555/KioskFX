@@ -17,7 +17,7 @@ import javafx.scene.layout.Pane;
  *
  * @author default
  */
-public class LoadingPane extends Pane {
+public class LoadingPane extends MyPane {
 
     private static LoadingPane instance = null;
 

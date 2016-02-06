@@ -51,7 +51,7 @@ public class Core {
     }
 
     public void init() {
-        CoinCounter.getInstance();        
+        //CoinCounter.getInstance();        
 
         coinAcceptorInputPin.addListener(new GpioPinListenerDigital() {
             @Override
@@ -99,17 +99,17 @@ public class Core {
         switch (coin) {
             case AMD100:
                 Global.print("coin inserted: 100Amd");
-                CoinCounter.getInstance().addAmd100Coin();
+                //CoinCounter.getInstance().addAmd100Coin();
                 
                 break;
             case AMD200:
                 Global.print("coin inserted: 200Amd");
-                CoinCounter.getInstance().addAmd200Coin();
+               // CoinCounter.getInstance().addAmd200Coin();
                 
                 break;
             case AMD500:
                 Global.print("coin inserted: 500Amd");
-                CoinCounter.getInstance().addAmd500Coin();
+                //CoinCounter.getInstance().addAmd500Coin();
                
                 break;
         }

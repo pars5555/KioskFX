@@ -45,7 +45,7 @@ import photobooth.managers.ImageManager;
  *
  * @author default
  */
-public class ImagePane extends Pane {
+public class ImagePane extends MyPane {
 
     private int brightness;
     private int contrast;

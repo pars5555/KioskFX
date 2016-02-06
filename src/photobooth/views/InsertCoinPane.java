@@ -23,7 +23,7 @@ import photobooth.Global;
  *
  * @author default
  */
-public class InsertCoinPane extends Pane {
+public class InsertCoinPane extends MyPane {
 
     private static InsertCoinPane instance = null;
     private Label insertLabel;

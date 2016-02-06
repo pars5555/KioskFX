@@ -9,6 +9,7 @@ import photobooth.views.HomePane;
 import photobooth.managers.LanguageManager;
 import photobooth.views.NotWorkingPane;
 import java.io.File;
+import java.net.URISyntaxException;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -127,7 +128,12 @@ public class Global {
      * the directory containing what will be in the jar.
      */
     public static String getJarDir() {
-        File f = new File(System.getProperty("java.class.path"));
+        File f = null;
+        try {
+            f = new File(Config.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+        } catch (URISyntaxException ex) {
+            Logger.getLogger(Global.class.getName()).log(Level.SEVERE, null, ex);
+        }
         File dir = f.getAbsoluteFile().getParentFile();
         return dir.toString();
     }

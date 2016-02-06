@@ -18,7 +18,7 @@ import javafx.scene.text.Font;
  *
  * @author default
  */
-public class NotWorkingPane extends Pane {
+public class NotWorkingPane extends MyPane {
 
     private static NotWorkingPane instance = null;
 

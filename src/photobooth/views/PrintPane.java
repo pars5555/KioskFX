@@ -6,17 +6,20 @@
 package photobooth.views;
 
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
@@ -27,7 +30,7 @@ import photobooth.managers.PrintManager;
  *
  * @author default
  */
-public class PrintPane extends Pane {
+public class PrintPane extends MyPane {
 
     private static PrintPane instance = null;
     private ImagePane backPanel;
@@ -50,12 +53,20 @@ public class PrintPane extends Pane {
     }
 
     private void addXButton() {
-        Button exitButton = new Button("X");
-        exitButton.setLayoutX(720);
-        exitButton.setLayoutY(10);
-        exitButton.getStyleClass().add("blueButton");
-        this.getChildren().add(exitButton);
-        exitButton.setOnAction(new EventHandler<ActionEvent>() {
+       Button button = new Button();
+        try {
+            button.setGraphic(new ImageView(new Image(getClass().getResource("/photobooth/images/exit.png").openStream())));
+        } catch (IOException ex) {
+            Logger.getLogger(EmailPane.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        button.setStyle("-fx-background-color: transparent;");
+        button.setLayoutX(730);
+        button.setLayoutY(10);
+        button.setMaxSize(50, 50);
+        button.setMinSize(50, 50);
+        button.getStyleClass().add("blueButton");
+        this.getChildren().add(button);
+        button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 timer.purge();

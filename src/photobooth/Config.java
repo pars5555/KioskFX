@@ -7,8 +7,11 @@ package photobooth;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import org.ini4j.Wini;
 
 /**
@@ -36,9 +39,8 @@ public class Config {
     
 
     private boolean loadIniSettings() {
-        //String jarDir = Global.getJarDir();
-        
-        String jarDir = "C:\\Users\\default.User\\Documents\\Git\\KioskFX";
+        String jarDir = Global.getJarDir();
+         
         try {
             ini = new Wini(new File(jarDir + "/config.ini"));
         } catch (Exception ex) {

@@ -21,7 +21,7 @@ import javafx.scene.text.TextAlignment;
  *
  * @author default
  */
-public class HomePane extends Pane {
+public class HomePane extends MyPane {
 
     private static HomePane instance = null;
 
@@ -53,9 +53,7 @@ public class HomePane extends Pane {
 
                         @Override
                         public void run() {
-                              ExplorerPane.getInstance().setDir("C:\\Users\\default.User\\Google Drive\\New folder");
-                            Global.getInstance().setSceneRoot(ExplorerPane.getInstance());
-                            /*
+                            
                             
                             
                             File[] roots = File.listRoots();                         
@@ -87,7 +85,7 @@ public class HomePane extends Pane {
                                     return;
                                 }
                             }
-                            Global.getInstance().setSceneRoot(HomePane.getInstance());*/
+                            Global.getInstance().setSceneRoot(HomePane.getInstance());
                         }
                     }).start();
                 });

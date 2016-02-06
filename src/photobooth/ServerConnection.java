@@ -92,15 +92,15 @@ public class ServerConnection implements Runnable {
         String serverHost = Config.getInstance().getString("server_host");
         String serialNumber = Global.getInstance().getToken();
         Integer carwashId = Config.getInstance().getInt("carwash_id");
-        Long amd100QtyFromCache = CoinCounter.getInstance().getAmd100QtyFromCache();
-        Long amd200QtyFromCache = CoinCounter.getInstance().getAmd200QtyFromCache();
-        Long amd500QtyFromCache = CoinCounter.getInstance().getAmd500QtyFromCache();
+        //Long amd100QtyFromCache = CoinCounter.getInstance().getAmd100QtyFromCache();
+        //Long amd200QtyFromCache = CoinCounter.getInstance().getAmd200QtyFromCache();
+       // Long amd500QtyFromCache = CoinCounter.getInstance().getAmd500QtyFromCache();
         Map<String, String> parameters = new HashMap<>();
         parameters.put("serial_number", serialNumber);
         parameters.put("carwash_id", String.valueOf(carwashId));
-        parameters.put("amd_100_qty", String.valueOf(amd100QtyFromCache));
-        parameters.put("amd_200_qty", String.valueOf(amd200QtyFromCache));
-        parameters.put("amd_500_qty", String.valueOf(amd500QtyFromCache));
+       // parameters.put("amd_100_qty", String.valueOf(amd100QtyFromCache));
+       // parameters.put("amd_200_qty", String.valueOf(amd200QtyFromCache));
+       // parameters.put("amd_500_qty", String.valueOf(amd500QtyFromCache));
         parameters.put("device_title", deviceTitle);
         parameters.put("server_ping_url", serverPingUrl);
         parameters.put("server_image_post_url", serverImagePostUrl);
@@ -265,7 +265,7 @@ public class ServerConnection implements Runnable {
     }
 
     private void resetDeviceCounterAction() {
-        CoinCounter.getInstance().reset();
+        //CoinCounter.getInstance().reset();
     }
 
     private void restartDeviceAction() {

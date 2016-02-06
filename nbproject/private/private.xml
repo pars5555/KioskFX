@@ -3,12 +3,14 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/default.User/Documents/Git/KioskFX/src/photobooth/views/ExplorerPane.java</file>
-            <file>file:/C:/Users/default.User/Documents/Git/KioskFX/src/photobooth/managers/EmailManager.java</file>
-            <file>file:/C:/Users/default.User/Documents/Git/KioskFX/src/photobooth/views/NotWorkingPane.java</file>
-            <file>file:/C:/Users/default.User/Documents/Git/KioskFX/src/photobooth/views/ImagePane.java</file>
+            <file>file:/C:/Users/default.User/Documents/Git/KioskFX/nbproject/jfx-impl.xml</file>
+            <file>file:/C:/Users/default.User/Documents/Git/KioskFX/src/photobooth/Main.java</file>
+            <file>file:/C:/Users/default.User/Documents/Git/KioskFX/src/photobooth/LinuxCommandsUtil.java</file>
+            <file>file:/C:/Users/default.User/Documents/Git/KioskFX/src/photobooth/Global.java</file>
+            <file>file:/C:/Users/default.User/Documents/Git/KioskFX/src/photobooth/Core.java</file>
+            <file>file:/C:/Users/default.User/Documents/Git/KioskFX/src/photobooth/views/HomePane.java</file>
+            <file>file:/C:/Users/default.User/Documents/Git/KioskFX/src/photobooth/ServerConnection.java</file>
             <file>file:/C:/Users/default.User/Documents/Git/KioskFX/src/photobooth/Config.java</file>
-            <file>file:/C:/Users/default.User/Documents/Git/KioskFX/src/photobooth/views/InsertCoinPane.java</file>
         </group>
     </open-files>
 </project-private>
